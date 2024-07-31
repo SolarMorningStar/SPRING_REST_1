@@ -1,14 +1,15 @@
 package com.solarmaster.star.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-
 import com.solarmaster.star.dto.EmployeeDTO;
 import com.solarmaster.star.model.EmployeeEntity;
 import com.solarmaster.star.repository.EmployeeRepository;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
@@ -31,8 +32,10 @@ public class EmployeeService {
         return modelMapper.map(employeeRepository.save(employeeEntity), EmployeeDTO.class);
     }
 
-    public List<EmployeeDTO> getAllEmployess() {
-        return employeeRepository.findAll().stream()
+    public List<EmployeeDTO> getAllEmployees(Integer pageNumber, Integer pageLimit, String sortBy, Boolean sortOrder) {
+        Sort sort = sortOrder != null && sortOrder ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        PageRequest pageRequest = PageRequest.of(pageNumber - 1, pageLimit, sort);
+        return employeeRepository.findAll(pageRequest).stream()
                 .map(employeeEntity -> modelMapper.map(employeeEntity, EmployeeDTO.class)).collect(Collectors.toList());
     }
 }

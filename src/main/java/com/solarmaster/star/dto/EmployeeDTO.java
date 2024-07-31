@@ -1,12 +1,11 @@
 package com.solarmaster.star.dto;
 
-import java.time.LocalDate;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.OffsetDateTime;
 
 @Data
 @AllArgsConstructor
@@ -14,7 +13,9 @@ import lombok.NoArgsConstructor;
 public class EmployeeDTO {
     private Long id;
     private String name;
-    private LocalDate joiningDate;
+    private OffsetDateTime joiningDate;
     @JsonProperty("isActive")
     private Boolean isActive;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 }

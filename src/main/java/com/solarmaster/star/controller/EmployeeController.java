@@ -1,24 +1,19 @@
 package com.solarmaster.star.controller;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.solarmaster.star.dto.EmployeeDTO;
 import com.solarmaster.star.service.EmployeeService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.solarmaster.star.util.constants.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/employee")
 public class EmployeeController {
-
     private final EmployeeService employeeService;
+    private final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
 
     public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
@@ -30,18 +25,28 @@ public class EmployeeController {
     }
 
     @GetMapping(path = "/all")
-    public List<EmployeeDTO> getEmployees() {
-        return employeeService.getAllEmployess();
+    public List<EmployeeDTO> getEmployees(
+            @RequestParam(defaultValue = "" + Constants.DEFAULT_PAGE_NUMBER) Integer pageNumber,
+            @RequestParam(defaultValue = "" + Constants.DEFAULT_PAGE_LIMIT) Integer pageLimit,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "" + Constants.DEFAULT_SORT_ORDER) Boolean sortOrder) {
+        try {
+            return employeeService.getAllEmployees(pageNumber, pageLimit, sortBy, sortOrder);
+        } catch (Exception e) {
+            logger.error("Error fetching employees with pageNumber: {}, pageLimit: {}, sortBy: {}, sortOrder: {}",
+                    pageNumber, pageLimit, sortBy, sortOrder, e);
+            throw e;
+        }
     }
+
 
     @GetMapping(path = "/{id}")
     public EmployeeDTO getEmployee(@PathVariable("id") Long empId) {
         return employeeService.getEmployeeById(empId);
     }
 
-    @GetMapping(path = "/")
-    public EmployeeDTO getEmployeeQuery(@RequestParam("name") String name) {
-        return new EmployeeDTO(12L, name, LocalDate.of(2007, 12, 3), true);
+    @GetMapping(path = "/details")
+    public EmployeeDTO getEmployeeQuery(@RequestParam("id") Long id) {
+        return employeeService.getEmployeeById(id);
     }
-
 }
