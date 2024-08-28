@@ -14,6 +14,8 @@ public class ProductVariantCombinationDTO {
     private Integer productId;
     private BigDecimal priceAdjustment;
     private Integer stock;
+    private Integer maxOrder;
+    private Integer minOrder;
     private String sku;
     private String attributeCombination; // JSON representation of the combination
 }

@@ -38,38 +38,45 @@ public class ProductService {
     @Autowired
     private ModelMapper modelMapper;
 
-//    @Transactional
-//    public ProductDTO createNewProductWithDetails(ProductCreationDTO productCreationDTO) {
-//        // Create the product
-//        Product product = modelMapper.map(productCreationDTO, Product.class);
-//        product = productRepository.save(product);
-//
-//        // Save the variants
-//        if (productCreationDTO.getVariants() != null && !productCreationDTO.getVariants().isEmpty()) {
-//            List<ProductVariantCombination> variants = productCreationDTO.getVariants().stream()
-//                    .map(variantDTO -> {
-//                        ProductVariantCombination variant = modelMapper.map(variantDTO, ProductVariantCombination.class);
-//                        variant.setProductId(product.getProductId());
-//                        return productVariantCombinationRepository.save(variant);
-//                    }).collect(Collectors.toList());
-//        }
-//
-//        // Save the images
-//        if (productCreationDTO.getImages() != null && !productCreationDTO.getImages().isEmpty()) {
-//            List<File> images = productCreationDTO.getImages().stream()
-//                    .map(fileDTO -> modelMapper.map(fileDTO, File.class))
-//                    .collect(Collectors.toList());
-//            images.forEach(image -> {
-//                image = fileRepository.save(image);
-//                ProductFile productFile = new ProductFile();
-//                productFile.setProductId(product.getProductId());
-//                productFile.setFileId(image.getFileId());
-//                productFileRepository.save(productFile);
-//            });
-//        }
-//
-//        return modelMapper.map(product, ProductDTO.class);
-//    }
+    @Transactional
+    public ProductDTO createNewProductWithDetails(ProductCreationDTO productCreationDTO) {
+
+        Product product = new Product();
+        product.setMerchantId(productCreationDTO.getMerchantId());
+        product.setName(productCreationDTO.getName());
+        product.setDescription(productCreationDTO.getDescription());
+        product.setPrice(productCreationDTO.getPrice());
+        product.setCategoryId(productCreationDTO.getCategoryId());
+
+        // Save the product
+        product = productRepository.save(product);
+
+        // Save the variants
+        if (productCreationDTO.getVariants() != null && !productCreationDTO.getVariants().isEmpty()) {
+            Product finalProduct = product;
+            List<ProductVariantCombination> variants = productCreationDTO.getVariants().stream().map(variantDTO -> {
+                ProductVariantCombination variant = modelMapper.map(variantDTO, ProductVariantCombination.class);
+                variant.setProductId(finalProduct.getProductId());
+                return productVariantCombinationRepository.save(variant);
+            }).collect(Collectors.toList());
+        }
+
+        // Save the images
+        if (productCreationDTO.getImages() != null && !productCreationDTO.getImages().isEmpty()) {
+            List<File> images = productCreationDTO.getImages().stream().map(fileDTO -> modelMapper.map(fileDTO, File.class)).collect(Collectors.toList());
+            Product finalProduct = product;
+            images.forEach(image -> {
+                image = fileRepository.save(image);
+                ProductFile productFile = new ProductFile();
+                productFile.setProductId(finalProduct.getProductId());
+                productFile.setFileId(image.getFileId());
+                productFileRepository.save(productFile);
+            });
+        }
+
+        return modelMapper.map(product, ProductDTO.class);
+    }
+
 
     public ProductDTO createNewProduct(ProductDTO productDTO) {
         Product product = modelMapper.map(productDTO, Product.class);
@@ -79,9 +86,7 @@ public class ProductService {
     public List<ProductDTO> getAllProducts(Integer pageNumber, Integer pageLimit, String sortBy, Boolean sortOrder) {
         Sort sort = sortOrder != null && sortOrder ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         PageRequest pageRequest = PageRequest.of(pageNumber - 1, pageLimit, sort);
-        return productRepository.findAll(pageRequest).stream()
-                .map(product -> modelMapper.map(product, ProductDTO.class))
-                .collect(Collectors.toList());
+        return productRepository.findAll(pageRequest).stream().map(product -> modelMapper.map(product, ProductDTO.class)).collect(Collectors.toList());
     }
 
     public ProductDTO getProductById(Integer productId) {

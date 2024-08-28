@@ -19,6 +19,9 @@ public class ProductFile {
     @Column(name = "product_id", nullable = false)
     private Integer productId;
 
+    @Column(name = "product_variant_id", nullable = false)
+    private Integer productVariantId;
+
     @Column(name = "file_id", nullable = false)
     private Integer fileId;
 }

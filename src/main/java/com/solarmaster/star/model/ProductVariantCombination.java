@@ -27,6 +27,12 @@ public class ProductVariantCombination {
     @Column(name = "stock")
     private Integer stock;
 
+    @Column(name = "max_order")
+    private Integer maxOrder;
+
+    @Column(name = "min_order")
+    private Integer minOrder;
+
     @Column(name = "sku", length = 255)
     private String sku;
 

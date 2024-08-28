@@ -1,5 +1,6 @@
 package com.solarmaster.star.controller;
 
+import com.solarmaster.star.dto.ProductCreationDTO;
 import com.solarmaster.star.dto.ProductDTO;
 import com.solarmaster.star.service.ProductService;
 import com.solarmaster.star.util.constants.Constants;
@@ -18,6 +19,11 @@ public class ProductController {
     @PostMapping("/add")
     public ProductDTO createProduct(@RequestBody ProductDTO productDTO) {
         return productService.createNewProduct(productDTO);
+    }
+
+    @PostMapping("/addWithDetails")
+    public ProductDTO createProductWithDetails(@RequestBody ProductCreationDTO productDTO) {
+        return productService.createNewProductWithDetails(productDTO);
     }
 
     @GetMapping("/all")

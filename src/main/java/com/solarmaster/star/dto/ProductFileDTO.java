@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 public class ProductFileDTO {
     private Integer productFileId;
     private Integer productId;
+    private Integer productVariantId;
     private Integer fileId;
 }
